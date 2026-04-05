@@ -1,8 +1,14 @@
 import axios from "axios";
-import type { Todo, TodoListResponse, TokenResponse, User } from "../types";
+import type {
+  PasskeyCredentialListResponse,
+  Todo,
+  TodoListResponse,
+  TokenResponse,
+  User,
+} from "../types";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
 });
 
 // Attach token to requests
@@ -50,4 +56,29 @@ export const todoApi = {
     api.patch<Todo>(`/api/v1/todos/${todoId}`, data),
 
   delete: (todoId: string) => api.delete(`/api/v1/todos/${todoId}`),
+};
+
+// Passkey API
+export const passkeyApi = {
+  getRegistrationOptions: () =>
+    api.post<Record<string, unknown>>("/api/v1/passkey/register/options"),
+
+  verifyRegistration: (credential: Record<string, unknown>) =>
+    api.post("/api/v1/passkey/register/verify", { credential }),
+
+  getAuthenticationOptions: (email?: string) =>
+    api.post<Record<string, unknown>>("/api/v1/passkey/authenticate/options", {
+      email: email || null,
+    }),
+
+  verifyAuthentication: (credential: Record<string, unknown>) =>
+    api.post<TokenResponse>("/api/v1/passkey/authenticate/verify", {
+      credential,
+    }),
+
+  listCredentials: () =>
+    api.get<PasskeyCredentialListResponse>("/api/v1/passkey/credentials"),
+
+  deleteCredential: (credentialId: string) =>
+    api.delete(`/api/v1/passkey/credentials/${credentialId}`),
 };

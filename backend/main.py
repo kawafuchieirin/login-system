@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from mangum import Mangum
 
 from clients.dynamodb import get_settings
-from routers import auth, todos
+from routers import auth, passkey, todos
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -41,6 +41,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(todos.router, prefix="/api/v1")
+app.include_router(passkey.router)
 
 
 @app.get("/health")

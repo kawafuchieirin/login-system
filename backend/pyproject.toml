@@ -13,6 +13,7 @@ boto3 = "^1.35.0"
 python-jose = { version = "^3.3.0", extras = ["cryptography"] }
 bcrypt = "^5.0.0"
 pydantic-settings = "^2.6.0"
+webauthn = "^2.7.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.0"
@@ -36,6 +37,10 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
+
+[[tool.mypy.overrides]]
+module = ["jose", "jose.*", "webauthn", "webauthn.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"

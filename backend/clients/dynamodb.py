@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     jwt_expire_hours: int = 24
     cors_origins: str = "http://localhost:5173"
     debug: bool = False
+    webauthn_rp_id: str = "localhost"
+    webauthn_rp_name: str = "Login System"
+    webauthn_origin: str = "http://localhost:5173"
+    webauthn_credentials_table_name: str = "login-system-webauthn-credentials"
+    auth_challenges_table_name: str = "login-system-auth-challenges"
 
     @property
     def cors_origins_list(self) -> list[str]:
