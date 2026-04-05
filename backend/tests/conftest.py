@@ -1,11 +1,14 @@
 """Test fixtures."""
 
 import os
+from collections.abc import Generator
+from typing import Any
 from unittest.mock import patch
 
 import boto3
 import pytest
 from moto import mock_aws
+from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 # Set test environment variables before importing app
 os.environ["JWT_SECRET_KEY"] = "test-secret-key"
@@ -15,7 +18,7 @@ os.environ["DEBUG"] = "true"
 
 
 @pytest.fixture(autouse=True)
-def _reset_settings():
+def _reset_settings() -> Generator[None]:
     """Clear cached settings between tests."""
     from clients.dynamodb import get_settings
 
@@ -24,7 +27,7 @@ def _reset_settings():
     get_settings.cache_clear()
 
 
-def _create_tables(dynamodb):
+def _create_tables(dynamodb: DynamoDBServiceResource) -> None:
     """Create DynamoDB tables for testing."""
     dynamodb.create_table(
         TableName="test-users",
@@ -57,14 +60,14 @@ def _create_tables(dynamodb):
 
 
 @pytest.fixture()
-def client():
+def client() -> Generator[Any]:
     """Create test client with mocked DynamoDB."""
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "ap-northeast-1"
 
     with mock_aws():
-        dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+        dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb", region_name="ap-northeast-1")
         _create_tables(dynamodb)
 
         with patch("clients.dynamodb.get_dynamodb_resource", return_value=dynamodb):
@@ -76,9 +79,9 @@ def client():
 
 
 @pytest.fixture()
-def auth_headers(client):
+def auth_headers(client: Any) -> dict[str, str]:
     """Register a user and return auth headers."""
     client.post("/api/v1/auth/register", json={"email": "test@example.com", "password": "password123"})
     response = client.post("/api/v1/auth/login", json={"email": "test@example.com", "password": "password123"})
-    token = response.json()["access_token"]
+    token: str = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

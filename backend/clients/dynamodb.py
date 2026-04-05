@@ -1,8 +1,10 @@
 """DynamoDB client and settings."""
 
 from functools import lru_cache
+from typing import Any
 
 import boto3
+from mypy_boto3_dynamodb import DynamoDBServiceResource
 from pydantic_settings import BaseSettings
 
 
@@ -28,10 +30,10 @@ def get_settings() -> Settings:
     return Settings()
 
 
-def get_dynamodb_resource():  # type: ignore[no-untyped-def]
+def get_dynamodb_resource() -> DynamoDBServiceResource:
     """Get DynamoDB resource."""
     settings = get_settings()
-    kwargs: dict = {"region_name": "ap-northeast-1"}
+    kwargs: dict[str, Any] = {"region_name": "ap-northeast-1"}
     if settings.dynamodb_endpoint_url:
         kwargs["endpoint_url"] = settings.dynamodb_endpoint_url
     return boto3.resource("dynamodb", **kwargs)

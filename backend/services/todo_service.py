@@ -2,11 +2,12 @@
 
 import uuid
 from datetime import UTC, datetime
+from typing import Any
 
 from clients.dynamodb import get_dynamodb_resource, get_settings
 
 
-def list_todos(user_id: str) -> list[dict]:
+def list_todos(user_id: str) -> list[dict[str, Any]]:
     """List all todos for a user."""
     settings = get_settings()
     dynamodb = get_dynamodb_resource()
@@ -27,7 +28,7 @@ def list_todos(user_id: str) -> list[dict]:
     ]
 
 
-def create_todo(user_id: str, title: str) -> dict:
+def create_todo(user_id: str, title: str) -> dict[str, Any]:
     """Create a new todo."""
     settings = get_settings()
     dynamodb = get_dynamodb_resource()
@@ -35,7 +36,7 @@ def create_todo(user_id: str, title: str) -> dict:
 
     todo_id = str(uuid.uuid4())
     now = datetime.now(UTC).isoformat()
-    item = {
+    item: dict[str, Any] = {
         "pk": f"USER#{user_id}",
         "sk": f"TODO#{todo_id}",
         "todo_id": todo_id,
@@ -47,13 +48,15 @@ def create_todo(user_id: str, title: str) -> dict:
     return {"todo_id": todo_id, "title": title, "completed": False, "created_at": now}
 
 
-def update_todo(user_id: str, todo_id: str, title: str | None = None, completed: bool | None = None) -> dict | None:
+def update_todo(
+    user_id: str, todo_id: str, title: str | None = None, completed: bool | None = None
+) -> dict[str, Any] | None:
     """Update a todo. Returns updated todo or None if not found."""
     settings = get_settings()
     dynamodb = get_dynamodb_resource()
     table = dynamodb.Table(settings.todos_table_name)
 
-    key = {"pk": f"USER#{user_id}", "sk": f"TODO#{todo_id}"}
+    key: dict[str, str] = {"pk": f"USER#{user_id}", "sk": f"TODO#{todo_id}"}
 
     # Check existence
     response = table.get_item(Key=key)
@@ -62,8 +65,8 @@ def update_todo(user_id: str, todo_id: str, title: str | None = None, completed:
         return None
 
     # Build update expression
-    update_parts = []
-    attr_values = {}
+    update_parts: list[str] = []
+    attr_values: dict[str, Any] = {}
     if title is not None:
         update_parts.append("title = :title")
         attr_values[":title"] = title
@@ -102,7 +105,7 @@ def delete_todo(user_id: str, todo_id: str) -> bool:
     dynamodb = get_dynamodb_resource()
     table = dynamodb.Table(settings.todos_table_name)
 
-    key = {"pk": f"USER#{user_id}", "sk": f"TODO#{todo_id}"}
+    key: dict[str, str] = {"pk": f"USER#{user_id}", "sk": f"TODO#{todo_id}"}
 
     response = table.get_item(Key=key)
     if not response.get("Item"):

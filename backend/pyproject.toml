@@ -37,5 +37,11 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
 python_version = "3.12"
 strict = true
 
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_any_generics = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
