@@ -8,7 +8,7 @@ from services.auth_service import decode_access_token
 security = HTTPBearer()
 
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:  # noqa: B008
     """Extract and validate user_id from JWT token."""
     user_id = decode_access_token(credentials.credentials)
     if user_id is None:

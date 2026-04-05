@@ -19,7 +19,7 @@ def register(request: RegisterRequest) -> UserResponse:
     try:
         user = register_user(request.email, request.password)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
     return UserResponse(**user)
 
 

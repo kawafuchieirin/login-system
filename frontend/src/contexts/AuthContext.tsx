@@ -1,5 +1,4 @@
 import {
-  createContext,
   useCallback,
   useEffect,
   useState,
@@ -7,38 +6,37 @@ import {
 } from "react";
 import { authApi } from "../services/api";
 import type { User } from "../types";
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-export const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext } from "./authContextValue";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token")
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !!token);
 
   useEffect(() => {
+    let cancelled = false;
     if (!token) {
-      setLoading(false);
       return;
     }
     authApi
       .me()
-      .then((res) => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem("token");
-        setToken(null);
+      .then((res) => {
+        if (!cancelled) setUser(res.data);
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) {
+          localStorage.removeItem("token");
+          setToken(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   const login = useCallback(async (email: string, password: string) => {
