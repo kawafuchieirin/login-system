@@ -55,9 +55,7 @@ class TestUpdateTodo:
         assert response.json()["completed"] is True
 
     def test_update_not_found(self, client: TestClient, auth_headers: dict):
-        response = client.patch(
-            "/api/v1/todos/nonexistent-id", json={"title": "Updated"}, headers=auth_headers
-        )
+        response = client.patch("/api/v1/todos/nonexistent-id", json={"title": "Updated"}, headers=auth_headers)
         assert response.status_code == 404
 
 
