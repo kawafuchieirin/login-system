@@ -1,11 +1,15 @@
 """DynamoDB client and settings."""
 
+from __future__ import annotations
+
 from functools import lru_cache
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import boto3
-from mypy_boto3_dynamodb import DynamoDBServiceResource
 from pydantic_settings import BaseSettings
+
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 
 class Settings(BaseSettings):

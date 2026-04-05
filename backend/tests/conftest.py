@@ -1,14 +1,18 @@
 """Test fixtures."""
 
+from __future__ import annotations
+
 import os
 from collections.abc import Generator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import boto3
 import pytest
 from moto import mock_aws
-from mypy_boto3_dynamodb import DynamoDBServiceResource
+
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 # Set test environment variables before importing app
 os.environ["JWT_SECRET_KEY"] = "test-secret-key"
