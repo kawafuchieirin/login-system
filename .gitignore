@@ -15,7 +15,7 @@ htmlcov/
 .coverage
 
 # Poetry
-poetry.lock
+# poetry.lock はコミット対象（再現可能なビルドのため）
 
 # Node
 node_modules/
