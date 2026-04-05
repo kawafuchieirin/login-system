@@ -4,7 +4,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { authApi } from "../services/api";
+import { startAuthentication } from "@simplewebauthn/browser";
+import type { PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/browser";
+import { authApi, passkeyApi } from "../services/api";
 import type { User } from "../types";
 import { AuthContext } from "./authContextValue";
 
@@ -50,6 +52,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await login(email, password);
   }, [login]);
 
+  const loginWithPasskey = useCallback(async (email?: string) => {
+    const optionsRes = await passkeyApi.getAuthenticationOptions(email);
+    const { _challenge_user_id: challengeUserId, ...browserOptions } =
+      optionsRes.data as Record<string, unknown>;
+
+    const credential = await startAuthentication({
+      optionsJSON:
+        browserOptions as unknown as PublicKeyCredentialRequestOptionsJSON,
+    });
+
+    const verifyRes = await passkeyApi.verifyAuthentication({
+      ...credential,
+      _challenge_user_id: challengeUserId,
+    });
+    localStorage.setItem("token", verifyRes.data.access_token);
+    setToken(verifyRes.data.access_token);
+  }, []);
+
   const logout = useCallback(() => {
     authApi.logout().catch(() => {});
     localStorage.removeItem("token");
@@ -58,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithPasskey, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

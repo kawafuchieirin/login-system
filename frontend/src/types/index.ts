@@ -19,3 +19,12 @@ export interface TokenResponse {
 export interface TodoListResponse {
   todos: Todo[];
 }
+
+export interface PasskeyCredential {
+  credential_id: string;
+  created_at: string;
+}
+
+export interface PasskeyCredentialListResponse {
+  credentials: PasskeyCredential[];
+}

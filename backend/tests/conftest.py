@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 os.environ["JWT_SECRET_KEY"] = "test-secret-key"
 os.environ["USERS_TABLE_NAME"] = "test-users"
 os.environ["TODOS_TABLE_NAME"] = "test-todos"
+os.environ["WEBAUTHN_CREDENTIALS_TABLE_NAME"] = "test-webauthn-credentials"
+os.environ["AUTH_CHALLENGES_TABLE_NAME"] = "test-auth-challenges"
+os.environ["WEBAUTHN_RP_ID"] = "localhost"
+os.environ["WEBAUTHN_RP_NAME"] = "Test Login System"
+os.environ["WEBAUTHN_ORIGIN"] = "http://localhost:5173"
 os.environ["DEBUG"] = "true"
 
 
@@ -58,6 +63,28 @@ def _create_tables(dynamodb: DynamoDBServiceResource) -> None:
         KeySchema=[
             {"AttributeName": "pk", "KeyType": "HASH"},
             {"AttributeName": "sk", "KeyType": "RANGE"},
+        ],
+        BillingMode="PAY_PER_REQUEST",
+    )
+    dynamodb.create_table(
+        TableName="test-webauthn-credentials",
+        AttributeDefinitions=[
+            {"AttributeName": "pk", "AttributeType": "S"},
+            {"AttributeName": "sk", "AttributeType": "S"},
+        ],
+        KeySchema=[
+            {"AttributeName": "pk", "KeyType": "HASH"},
+            {"AttributeName": "sk", "KeyType": "RANGE"},
+        ],
+        BillingMode="PAY_PER_REQUEST",
+    )
+    dynamodb.create_table(
+        TableName="test-auth-challenges",
+        AttributeDefinitions=[
+            {"AttributeName": "pk", "AttributeType": "S"},
+        ],
+        KeySchema=[
+            {"AttributeName": "pk", "KeyType": "HASH"},
         ],
         BillingMode="PAY_PER_REQUEST",
     )

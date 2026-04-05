@@ -1,3 +1,4 @@
+import { PasskeySettings } from "../components/PasskeySettings";
 import { TodoForm } from "../components/TodoForm";
 import { TodoItem } from "../components/TodoItem";
 import { useAuth } from "../hooks/useAuth";
@@ -37,6 +38,8 @@ export function TodoPage() {
           ))}
         </ul>
       )}
+
+      <PasskeySettings />
     </div>
   );
 }
